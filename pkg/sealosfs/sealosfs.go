@@ -25,20 +25,22 @@ func SaveSealOSConfig(sealos_conf *sealos.APISealOSConfig, target string) error 
                 return err
         }
 
-        f, err := os.Create(target)
+        f, err := os.Create(target + ".tmp")
         if err != nil && err != os.ErrExist {
                 return err
         }
 
-        defer f.Close()
-
         data := bytes.NewReader(b)
         _, err = io.Copy(f, data)
+        f.Close()
         if err != nil {
                 return err
         }
 
-        // Path mode fixes
+        /* Overwrite final target */
+        os.Rename(target + ".tmp", target)
+
+        /* fix permissions */
         os.Chmod(target, 0600)
 
         return nil
