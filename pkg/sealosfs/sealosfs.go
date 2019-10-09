@@ -17,20 +17,23 @@ import (
 var sealOSConflock sync.Mutex
 
 func SaveSealOSConfig(sealos_conf *sealos.APISealOSConfig, target string) error {
-        sealOSConflock.Lock()
-        defer sealOSConflock.Unlock()
-
-        b, err := json.MarshalIndent(sealos_conf, "", "\t")
+        b := &bytes.Buffer{}
+        encoder := json.NewEncoder(b)
+        encoder.SetEscapeHTML(false)
+        err := encoder.Encode(sealos_conf)
         if err != nil {
                 return err
         }
 
-        f, err := os.Create(target + ".tmp")
+        out := bytes.Buffer{}
+        json.Indent(&out, b.Bytes(), "", "\t")
+
+        f, err := os.OpenFile(target + ".tmp", os.O_RDWR|os.O_CREATE, 0600)
         if err != nil && err != os.ErrExist {
                 return err
         }
 
-        data := bytes.NewReader(b)
+        data := bytes.NewReader(out.Bytes())
         _, err = io.Copy(f, data)
         f.Close()
         if err != nil {
