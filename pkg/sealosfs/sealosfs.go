@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2018 Open Devices. All rights reserved.
+   Copyright (c) 2020 Open Devices GmbH. All rights reserved.
 */
 
 package sealosfs
