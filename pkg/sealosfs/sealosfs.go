@@ -35,6 +35,9 @@ func SaveSealOSConfig(sealos_conf *sealos.APISealOSConfig, target string) error 
 
         data := bytes.NewReader(out.Bytes())
         _, err = io.Copy(f, data)
+        if err == nil {
+                f.Sync()
+        }
         f.Close()
         if err != nil {
                 return err
@@ -43,7 +46,7 @@ func SaveSealOSConfig(sealos_conf *sealos.APISealOSConfig, target string) error 
         /* Overwrite final target */
         os.Rename(target + ".tmp", target)
 
-        /* fix permissions */
+        /* Fix permissions */
         os.Chmod(target, 0600)
 
         return nil
